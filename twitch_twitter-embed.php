@@ -75,7 +75,7 @@
 		$userData = getUserByName($_GET["channel"]);
 		if(count($userData)) {
 			$userData = $userData[0];
-			$embedURL = "http://player.twitch.tv/?channel={$userData->login}";
+			$embedURL = "https://player.twitch.tv/?channel={$userData->login}";
 			$streamData = getStreamByName($userData->login);
 			if(count($streamData)) {
 				$streamData = $streamData[0];
@@ -107,7 +107,7 @@
 		$videoData = getVideoByID($_GET["video"]);
 		if(count($videoData)) {
 			$videoData = $videoData[0];
-			$embedURL = "http://player.twitch.tv/?video={$videoData->id}";
+			$embedURL = "https://player.twitch.tv/?video={$videoData->id}";
 			$cardDescription = $videoData->title;
 			$cardImage = str_replace("%{width}x%{height}", "640x360", $videoData->thumbnail_url);
 			$userData = getUserByID($videoData->user_id)[0];

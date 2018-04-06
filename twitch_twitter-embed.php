@@ -1,6 +1,7 @@
 <?php
 	$clientID = ""; // Required
 	
+	$testing = false;
 	
 	$embedType = "stream";
 	if(!isset($_GET["channel"])) {
@@ -13,6 +14,10 @@
 		else {
 			$embedType = "";
 		}
+	}
+	
+	if(isset($_GET["testing"])) {
+		$testing = true;
 	}
 	
 	$baseURL = "https://api.twitch.tv/helix";
@@ -70,12 +75,14 @@
 	$embedURL = "https://twitch.tv/";
 	$cardDescription = "Twitch.tv";
 	$cardImage = "https://static-cdn.jtvnw.net/ttv-static/404_preview-640x360.jpg";
+	$redirectURL = "https://twitch.tv/";
 	
 	if($embedType === "stream") {
 		$userData = getUserByName($_GET["channel"]);
 		if(count($userData)) {
 			$userData = $userData[0];
 			$embedURL = "https://player.twitch.tv/?channel={$userData->login}";
+			$redirectURL = "https://twitch.tv/{$userData->login}";
 			$streamData = getStreamByName($userData->login);
 			if(count($streamData)) {
 				$streamData = $streamData[0];
@@ -112,6 +119,7 @@
 			$cardImage = str_replace("%{width}x%{height}", "640x360", $videoData->thumbnail_url);
 			$userData = getUserByID($videoData->user_id)[0];
 			$cardTitle = "Video by {$userData->display_name} on Twitch!";
+			$redirectURL = $videoData->url;
 		}
 		else {
 			echo "Couldn't find video by ID \"{$_GET["video"]}\"";
@@ -127,6 +135,7 @@
 			$cardImage = $clipData->thumbnail_url;
 			$userData = getUserByID($clipData->broadcaster_id)[0];
 			$gameName = getGameNameByID($clipData->game_id);
+			$redirectURL = $clipData->url;
 			if($gameName) {
 				$cardTitle = "Clip of {$userData->display_name} playing {$gameName} on Twitch!";
 			}
@@ -161,7 +170,6 @@
 	
 	// exit(200);
 ?>
-
 <!doctype html>
 <html>
 <head>
@@ -174,7 +182,11 @@
 	<meta name="twitter:player:width" content="640">
 	<meta name="twitter:player:height" content="360">
 	<meta name="twitter:image:partner_badge:src" content="https://clips-media-assets.twitch.tv/img/twitch-white-rgb.png"/>
-	<!-- <meta http-equiv="refresh" content="0; url="https://twitch.tv/<?=$userData->login?>" /> -->
+	<?php
+		if($testing === false) {
+			echo "<meta http-equiv=\"refresh\" content=\"0; url={$redirectURL}\">";
+		}
+	?>
 </head>
 <body></body>
 </html>
